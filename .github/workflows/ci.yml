@@ -15,8 +15,8 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          - distribution: temurin
-            java-version: 26
+         distribution: temurin
+         java-version: 26
 
       - name: Make Maven Wrapper executable
         run: chmod +x mvnw
