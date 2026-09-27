@@ -28,8 +28,11 @@ jobs:
       - name: Make Maven Wrapper executable
         run: chmod +x mvnw
 
-      - name: Run tests
-        run: ./mvnw test
-
-      - name: Build application
+      - name: build and test
         run: ./mvnw clean package
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-api
+          path: store-api/target/*.jar
