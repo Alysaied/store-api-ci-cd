@@ -9,7 +9,8 @@ public class ProductService {
     public List<Product> findAll() {
         return List.of(
                 new Product(1L, "Laptop", 25000),
-                new Product(2L, "Mouse", 500)
+                new Product(2L, "Mouse", 500),
+                new Product(3L, "Keyboard",1000)
         );
     }
 }
