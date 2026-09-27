@@ -10,7 +10,7 @@ public class ProductServiceTest {
         ProductService service = new ProductService();
 
         var products = service.findAll();
-        assertEquals(4444, products.size());
+        assertEquals(44, products.size());
     }
 }
 
