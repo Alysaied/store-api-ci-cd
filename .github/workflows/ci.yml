@@ -38,4 +38,4 @@ jobs:
           path: store-api/target/*.jar
 
       - name: Build Docker image
-        run: docker build -t store-api:1.0 ./store-api
+        run: docker build -t store-api:1.0 .
