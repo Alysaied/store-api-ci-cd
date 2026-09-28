@@ -8,6 +8,11 @@ on:
   pull_request:
     branches:
       - main
+
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -38,4 +43,16 @@ jobs:
           path: store-api/target/*.jar
 
       - name: Build Docker image
-        run: docker build -t store-api:1.0 .
+        run: docker build -t ghcr.io/alysaied/store-api:${{ github.sha }} .
+
+      - name: Push Docker image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/man'
+        run: docker push ghcr.io/alysaied/store-api:${{ github.sha }}
+
+      - name: Login to GitHub Container Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
