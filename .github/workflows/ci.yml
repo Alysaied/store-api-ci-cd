@@ -46,6 +46,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: store-api
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -54,7 +58,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: store-api
-          path: store-api/ target
+          path: store-api/target
 
       - name: Build Docker image
         run: docker build -t ghcr.io/alysaied/store-api:${{ github.sha }} .
