@@ -87,6 +87,16 @@ jobs:
       - name: Pull new Docker image
         run:
           docker pull ghcr.io/alysaied/store-api:${{ github.sha }}
+      - name: Save previous image
+        run: |
+          if docker inspect store-api-container >/dev/null 2>&1; then
+            PREVIOUS_IMAGE=$(docker inspect store-api-container --format='{{.Config.Image}}')
+            echo "PREVIOUS_IMAGE=$PREVIOUS_IMAGE" >> "$GITHUB_ENV"
+            echo "Previous image: $PERVIOUS_IMAGE"
+          else
+            echo "PERVIOUS_IMAGE=" >> "$GITHUB_ENV"
+            echo "No pervious container found"
+          fi
       - name: Remove old container
         run: docker rm -f store-api-container || true
       - name: Start new container
@@ -103,7 +113,7 @@ jobs:
           for i in {1..10}; do
             if curl -f http://localhost:8080/api/products; then 
               echo "Store API is healthy"
-              exit 0
+              exit 1
             fi
             echo "Attempt $i failed. Retrying in 5 seconds..."
             sleep 5
@@ -111,3 +121,21 @@ jobs:
           echo "Store API failed health check"
           docker logs store-api-container
           exit 1
+      - name: Rollback deployment
+        if: failure()
+        run: |
+          echo "New deployment failed."
+          if [ -z "$PREVIOUS_IMAGE" ]; then
+            echo "No previous image available for rollback."
+            exit 1
+          fi
+          echo "Rolling back to: "$PREVIOUS_IMAGE"
+          
+          docker rm -f store-api-container || true
+          
+          docker run -d \
+            --name store-api-container \
+            --restart unless-stopped \
+            -p 8080:8080 \
+            "$PREVIOUS_IMAGE"
+          echo "Rollback completed."
