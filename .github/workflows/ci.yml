@@ -104,7 +104,7 @@ jobs:
             if curl -f http://localhost:8080/api/products; then 
               echo "Store API is healthy"
               exit 0
-            fi 
+            if
             echo "Attempt $i failed. Retrying in 5 seconds..."
             sleep 5
           done 
