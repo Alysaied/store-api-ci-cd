@@ -98,4 +98,16 @@ jobs:
             ghcr.io/alysaied/store-api:${{ github.sha }}
       - name: Verify deployment
         run:
-          docker ps
+          echo "waiting for Store API to become healthy..."
+          
+          for i in {1..10}; do
+            if curl -f http://localhost:8080/api/products; then 
+              echo "Store API is healthy"
+              exit 0
+            fi 
+            echo "Attempt $i failed. Retrying in 5 seconds..."
+            sleep 5
+          done 
+          echo "Store API failed health check"
+          docker logs store-api-container
+          exit 1
