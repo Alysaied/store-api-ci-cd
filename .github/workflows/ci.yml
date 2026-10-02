@@ -74,3 +74,28 @@ jobs:
       - name: Push Docker image
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: docker push ghcr.io/alysaied/store-api:${{ github.sha }}
+
+  deploy:
+    needs: docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main
+
+    runs-on:
+      - self-hosted
+      - Linux
+      - X64
+    steps:
+      - name: Pull new Docker image
+        run:
+          docker pull ghcr.io/alysaied/store-api:${{ github.sha }}
+      - name: Remove old container
+        run: docker rm -f store-api-container || true
+      - name: Start new container
+        run: |
+          docker run -d \
+            --name store-api-container \
+            --restart unless-stopped \
+            -p 8080:8080 \
+            ghcr.io/alysaied/store-api:${{ github.sha }}
+      - name: Verify deployment
+        run:
+          docker ps
