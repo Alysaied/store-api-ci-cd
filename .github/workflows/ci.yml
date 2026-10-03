@@ -78,7 +78,7 @@ jobs:
   deploy:
     needs: docker
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
+    environment: production
     runs-on:
       - self-hosted
       - Linux
@@ -105,13 +105,14 @@ jobs:
             --name store-api-container \
             --restart unless-stopped \
             -p 8080:8080 \
+            -e APP_ENVIRONMENT="${{vars.APP_ENVIRONMENT}}" \
             ghcr.io/alysaied/store-api:${{ github.sha }}
       - name: Verify deployment
         run: |
           echo "waiting for Store API to become healthy..."
           
           for i in {1..10}; do
-            if curl -f http://localhost:8080/api/products; then 
+            if curl -f http://localhost:8080/api/this-endpoint-does-not-exist; then 
               echo "Store API is healthy"
               exit 1
             fi
