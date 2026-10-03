@@ -112,7 +112,7 @@ jobs:
           echo "waiting for Store API to become healthy..."
           
           for i in {1..10}; do
-            if curl -f http://localhost:8080/api/this-endpoint-does-not-exist; then 
+            if curl -f http://localhost:8080/api/products; then 
               echo "Store API is healthy"
               exit 1
             fi
@@ -130,7 +130,7 @@ jobs:
             echo "No previous image available for rollback."
             exit 1
           fi
-          echo "Rolling back to: "$PREVIOUS_IMAGE"
+          echo "Rolling back to": "$PREVIOUS_IMAGE"
           
           docker rm -f store-api-container || true
           
